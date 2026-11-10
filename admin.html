@@ -1,99 +1,139 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>KNHS Administration</title>
+  <title>KNHS Admin Dashboard</title>
   <link rel="stylesheet" href="style.css">
-
   <style>
     body {
-      background: #f2f7f3;
+      background: #f1f6f2;
       min-height: 100vh;
     }
 
     .admin-header {
       background: #104d2b;
       color: white;
-      padding: 22px 5%;
+      padding: 20px 5%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 15px;
-      flex-wrap: wrap;
-    }
-
-    .admin-header h1 {
-      font-size: 22px;
     }
 
     .admin-header a {
       color: #f4c542;
       text-decoration: none;
-      font-weight: bold;
     }
 
-    .admin-container {
-      max-width: 850px;
-      margin: 55px auto;
+    .login-container {
+      max-width: 440px;
+      margin: 75px auto;
       padding: 20px;
     }
 
-    .admin-card {
+    .login-card, .dashboard-card {
       background: white;
       padding: 35px;
       border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,.08);
-      margin-bottom: 25px;
+      box-shadow: 0 5px 25px rgba(0,0,0,.08);
     }
 
-    .admin-card h2 {
+    .login-card h2, .dashboard-card h2 {
       color: #176b3a;
-      margin-bottom: 15px;
-    }
-
-    .admin-card p {
-      color: #66736b;
-      margin-bottom: 15px;
-    }
-
-    .admin-list {
-      padding-left: 22px;
-      color: #203128;
-    }
-
-    .admin-list li {
       margin-bottom: 10px;
     }
 
-    .notice {
-      background: #fff8df;
-      border-left: 5px solid #f4c542;
-      padding: 16px;
-      border-radius: 5px;
-      color: #574719;
+    .login-card p {
+      color: #66736b;
+      margin-bottom: 22px;
+    }
+
+    .login-card label {
+      display: block;
+      margin: 15px 0 6px;
+      font-weight: bold;
+    }
+
+    .login-card input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccd7ce;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    .login-card button, .logout-button {
+      width: 100%;
+      padding: 13px;
+      background: #176b3a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
       margin-top: 20px;
     }
 
-    .admin-button {
-      display: inline-block;
-      background: #176b3a;
-      color: white;
-      padding: 12px 20px;
+    .login-card button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px;
       border-radius: 5px;
-      text-decoration: none;
-      font-weight: bold;
-      margin-top: 10px;
+      display: none;
+      overflow-wrap: anywhere;
     }
 
-    .admin-button:hover {
-      background: #104d2b;
+    .error {
+      background: #fdeaea;
+      color: #9b1c1c;
     }
 
-    @media (max-width: 600px) {
-      .admin-card {
-        padding: 23px;
+    .success {
+      background: #e7f5eb;
+      color: #176b3a;
+    }
+
+    .dashboard-container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .dashboard-card {
+      padding: 25px;
+    }
+
+    .dashboard-card p {
+      color: #66736b;
+      font-size: 14px;
+    }
+
+    .logout-button {
+      max-width: 150px;
+      background: #9b2525;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media(max-width: 600px) {
+      .login-card {
+        padding: 25px;
       }
 
       .admin-header h1 {
@@ -102,72 +142,205 @@
     }
   </style>
 </head>
-
 <body>
 
-  <header class="admin-header">
-    <h1>KNHS Administration</h1>
-    <a href="index.html">← View Public Website</a>
-  </header>
+<header class="admin-header">
+  <h1>KNHS Administration</h1>
+  <a href="index.html">← Public Website</a>
+</header>
 
-  <main class="admin-container">
+<main>
+  <section class="login-container" id="loginSection">
+    <div class="login-card">
+      <h2>Administrator Login</h2>
+      <p>Sign in using your authorized KNHS administrator account.</p>
 
-    <section class="admin-card">
-      <h2>Welcome to the School Management Dashboard</h2>
+      <form id="loginForm">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          autocomplete="username"
+          required
+          placeholder="Administrator email"
+        >
 
-      <p>
-        This is the administration area of Kitabog National High School's
-        official website.
-      </p>
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          autocomplete="current-password"
+          required
+          placeholder="Enter your password"
+        >
 
-      <p>
-        Authorized school personnel will be able to manage website content
-        through this dashboard once secure authentication and database
-        services have been configured.
-      </p>
+        <button type="submit" id="loginButton">Sign In</button>
+      </form>
 
-      <div class="notice">
-        <strong>Setup in progress:</strong>
-        Administrator login and content management are not yet active.
-        Please do not enter passwords or sensitive information on this page.
+      <div id="loginMessage" class="message" role="status"></div>
+    </div>
+  </section>
+
+  <section class="dashboard-container" id="dashboardSection" hidden>
+    <div class="dashboard-card">
+      <h2>Welcome to the KNHS Dashboard!</h2>
+      <p id="adminEmail"></p>
+      <p>You are signed in and your administrator access has been verified.</p>
+      <button class="logout-button" id="logoutButton">Sign Out</button>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <h2>Announcements</h2>
+        <p>Manage school news and updates.</p>
       </div>
-    </section>
+      <div class="dashboard-card">
+        <h2>Faculty & Staff</h2>
+        <p>Manage school personnel information.</p>
+      </div>
+      <div class="dashboard-card">
+        <h2>Gallery</h2>
+        <p>Organize school activity photos.</p>
+      </div>
+      <div class="dashboard-card">
+        <h2>Downloads</h2>
+        <p>Manage school forms and documents.</p>
+      </div>
+      <div class="dashboard-card">
+        <h2>School Information</h2>
+        <p>Update school profile and contact details.</p>
+      </div>
+    </div>
+  </section>
+</main>
 
-    <section class="admin-card">
-      <h2>Planned Dashboard Features</h2>
+<footer>
+  <p>© <span id="year"></span> Kitabog National High School</p>
+  <p>Official Administration Portal</p>
+</footer>
 
-      <ul class="admin-list">
-        <li>Manage school announcements and news.</li>
-        <li>Add and update faculty and staff information.</li>
-        <li>Upload and organize school gallery photos.</li>
-        <li>Upload downloadable school forms and documents.</li>
-        <li>Update school profile and contact information.</li>
-      </ul>
-    </section>
-
-    <section class="admin-card">
-      <h2>Next: Secure Administrator Access</h2>
-
-      <p>
-        The dashboard will use Supabase authentication and database
-        security so only authorized administrators can manage school content.
-      </p>
-
-      <a href="index.html" class="admin-button">
-        Return to School Website
-      </a>
-    </section>
-
-  </main>
-
-  <footer>
-    <p>© <span id="year"></span> Kitabog National High School</p>
-    <p>Authorized School Administration</p>
-  </footer>
-
- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
-<script src="script.js"></script>
+
+<script>
+  const loginForm = document.getElementById("loginForm");
+  const loginSection = document.getElementById("loginSection");
+  const dashboardSection = document.getElementById("dashboardSection");
+  const loginMessage = document.getElementById("loginMessage");
+  const loginButton = document.getElementById("loginButton");
+  const logoutButton = document.getElementById("logoutButton");
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  function showMessage(message, type) {
+    loginMessage.textContent = message;
+    loginMessage.className = "message " + type;
+    loginMessage.style.display = "block";
+  }
+
+  function showLogin() {
+    loginSection.hidden = false;
+    dashboardSection.hidden = true;
+  }
+
+  function showDashboard(email) {
+    loginSection.hidden = true;
+    dashboardSection.hidden = false;
+    document.getElementById("adminEmail").textContent =
+      "Signed in as: " + email;
+  }
+
+  async function verifyAdmin() {
+    const client = window.knhsSupabase;
+
+    if (!client) {
+      showLogin();
+      showMessage(
+        "Supabase is not configured. Check your project URL and publishable key.",
+        "error"
+      );
+      return;
+    }
+
+    const { data: { session }, error: sessionError } =
+      await client.auth.getSession();
+
+    if (sessionError || !session) {
+      showLogin();
+      return;
+    }
+
+    const { data: isAdmin, error } =
+      await client.rpc("is_admin");
+
+    if (error || isAdmin !== true) {
+      await client.auth.signOut();
+      showLogin();
+      showMessage(
+        "This account is not authorized as a KNHS administrator.",
+        "error"
+      );
+      return;
+    }
+
+    showDashboard(session.user.email);
+  }
+
+  loginForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const client = window.knhsSupabase;
+
+    if (!client) {
+      showMessage("Supabase connection is unavailable.", "error");
+      return;
+    }
+
+    loginButton.disabled = true;
+    loginButton.textContent = "Signing in...";
+
+    try {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const { data, error } = await client.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      const { data: isAdmin, error: adminError } =
+        await client.rpc("is_admin");
+
+      if (adminError || isAdmin !== true) {
+        await client.auth.signOut();
+        throw new Error("Your account does not have administrator permission.");
+      }
+
+      showDashboard(data.user.email);
+    } catch (error) {
+      showMessage(error.message || "Unable to sign in.", "error");
+    } finally {
+      loginButton.disabled = false;
+      loginButton.textContent = "Sign In";
+    }
+  });
+
+  logoutButton.addEventListener("click", async function() {
+    const { error } = await window.knhsSupabase.auth.signOut();
+
+    if (error) {
+      alert("Unable to sign out. Please try again.");
+      return;
+    }
+
+    showLogin();
+    showMessage("You have successfully signed out.", "success");
+  });
+
+  verifyAdmin();
+</script>
 
 </body>
 </html>
