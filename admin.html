@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>KNHS Administration</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      background: #f2f7f3;
+      min-height: 100vh;
+    }
+
+    .admin-header {
+      background: #104d2b;
+      color: white;
+      padding: 22px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .admin-header h1 {
+      font-size: 22px;
+    }
+
+    .admin-header a {
+      color: #f4c542;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .admin-container {
+      max-width: 850px;
+      margin: 55px auto;
+      padding: 20px;
+    }
+
+    .admin-card {
+      background: white;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+      margin-bottom: 25px;
+    }
+
+    .admin-card h2 {
+      color: #176b3a;
+      margin-bottom: 15px;
+    }
+
+    .admin-card p {
+      color: #66736b;
+      margin-bottom: 15px;
+    }
+
+    .admin-list {
+      padding-left: 22px;
+      color: #203128;
+    }
+
+    .admin-list li {
+      margin-bottom: 10px;
+    }
+
+    .notice {
+      background: #fff8df;
+      border-left: 5px solid #f4c542;
+      padding: 16px;
+      border-radius: 5px;
+      color: #574719;
+      margin-top: 20px;
+    }
+
+    .admin-button {
+      display: inline-block;
+      background: #176b3a;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .admin-button:hover {
+      background: #104d2b;
+    }
+
+    @media (max-width: 600px) {
+      .admin-card {
+        padding: 23px;
+      }
+
+      .admin-header h1 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="admin-header">
+    <h1>KNHS Administration</h1>
+    <a href="index.html">← View Public Website</a>
+  </header>
+
+  <main class="admin-container">
+
+    <section class="admin-card">
+      <h2>Welcome to the School Management Dashboard</h2>
+
+      <p>
+        This is the administration area of Kitabog National High School's
+        official website.
+      </p>
+
+      <p>
+        Authorized school personnel will be able to manage website content
+        through this dashboard once secure authentication and database
+        services have been configured.
+      </p>
+
+      <div class="notice">
+        <strong>Setup in progress:</strong>
+        Administrator login and content management are not yet active.
+        Please do not enter passwords or sensitive information on this page.
+      </div>
+    </section>
+
+    <section class="admin-card">
+      <h2>Planned Dashboard Features</h2>
+
+      <ul class="admin-list">
+        <li>Manage school announcements and news.</li>
+        <li>Add and update faculty and staff information.</li>
+        <li>Upload and organize school gallery photos.</li>
+        <li>Upload downloadable school forms and documents.</li>
+        <li>Update school profile and contact information.</li>
+      </ul>
+    </section>
+
+    <section class="admin-card">
+      <h2>Next: Secure Administrator Access</h2>
+
+      <p>
+        The dashboard will use Supabase authentication and database
+        security so only authorized administrators can manage school content.
+      </p>
+
+      <a href="index.html" class="admin-button">
+        Return to School Website
+      </a>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span> Kitabog National High School</p>
+    <p>Authorized School Administration</p>
+  </footer>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
