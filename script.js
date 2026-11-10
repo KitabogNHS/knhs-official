@@ -64,4 +64,35 @@ function displayAnnouncements(announcements) {
 // Make the function available for future dashboard integration.
 window.displayAnnouncements = displayAnnouncements;
 
-console.log("KNHS website scripts loaded successfully.");
+console.log("KNHS website scripts loaded successfully."); 
+
+// =====================================
+// LOAD PUBLISHED ANNOUNCEMENTS FROM SUPABASE
+// =====================================
+
+async function loadPublicAnnouncements() {
+  const client = window.knhsSupabase;
+
+  if (!client) {
+    console.error("KNHS Supabase connection is unavailable.");
+    return;
+  }
+
+  const { data, error } = await client
+    .from("announcements")
+    .select("title, description, image_url, created_at")
+    .eq("published", true)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Unable to load announcements:", error.message);
+    return;
+  }
+
+  if (typeof window.displayAnnouncements === "function") {
+    window.displayAnnouncements(data);
+  }
+}
+
+// Load announcements when the homepage opens
+loadPublicAnnouncements();
