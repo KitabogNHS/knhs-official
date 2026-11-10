@@ -6,9 +6,9 @@
 // Replace these two values with your own
 // Supabase Project URL and Publishable Key.
 
-const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+const SUPABASE_URL = "https://pwrpddpqsrhircgophfj.supabase.co";
 
-const SUPABASE_PUBLISHABLE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_9HIhgd6rE8_A0GleZ3ozwQ_6AOrR58K";
 
 // Initialize the Supabase connection
 if (
