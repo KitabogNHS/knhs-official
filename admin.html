@@ -325,6 +325,82 @@
       </div>
     </div>
 
+<!-- FACULTY AND STAFF MANAGER -->
+<div class="dashboard-card">
+  <h2>Faculty & Staff Manager</h2>
+  <p>Add and manage Kitabog National High School personnel.</p>
+
+  <form id="facultyForm" class="announcement-form">
+
+    <input type="hidden" id="facultyId">
+
+    <label for="facultyName">Full Name</label>
+    <input
+      type="text"
+      id="facultyName"
+      maxlength="150"
+      required
+      placeholder="Enter full name"
+    >
+
+    <label for="facultyPosition">Position</label>
+    <input
+      type="text"
+      id="facultyPosition"
+      maxlength="150"
+      placeholder="Example: Teacher III"
+    >
+
+    <label for="facultyDepartment">Department</label>
+    <input
+      type="text"
+      id="facultyDepartment"
+      maxlength="150"
+      placeholder="Example: TLE Department"
+    >
+
+    <label for="facultyPhoto">Photo URL (optional)</label>
+    <input
+      type="url"
+      id="facultyPhoto"
+      placeholder="https://example.com/photo.jpg"
+    >
+
+    <button type="submit" class="primary-button" id="saveFacultyButton">
+      Save Faculty Member
+    </button>
+
+    <button
+      type="button"
+      class="secondary-button"
+      id="cancelFacultyEdit"
+      hidden
+    >
+      Cancel Edit
+    </button>
+
+  </form>
+
+  <div id="facultyMessage" class="message" role="status"></div>
+</div>
+
+<!-- SAVED FACULTY AND STAFF -->
+<div class="dashboard-card">
+  <h2>Saved Faculty & Staff</h2>
+
+  <button
+    type="button"
+    class="secondary-button"
+    id="refreshFacultyButton"
+  >
+    Refresh List
+  </button>
+
+  <div id="facultyList">
+    <p>Faculty records will appear here.</p>
+  </div>
+</div>
+
   </section>
 </main>
 
