@@ -454,13 +454,16 @@
   }
 
   async function showDashboard(email) {
-    loginSection.hidden = true;
-    dashboardSection.hidden = false;
+  loginSection.hidden = true;
+  dashboardSection.hidden = false;
 
-    document.getElementById("adminEmail").textContent =
-      "Signed in as: " + email;
+  document.getElementById("adminEmail").textContent =
+    "Signed in as: " + email;
 
-    await loadAnnouncements();
+  await loadAnnouncements();
+
+  if (typeof loadFaculty === "function") {
+    await loadFaculty();
   }
 
   async function verifyAdmin() {
@@ -742,6 +745,228 @@
     showLogin();
     showMessage(loginMessage, "You have successfully signed out.", "success");
   });
+
+// =====================================
+// FACULTY & STAFF MANAGEMENT
+// =====================================
+
+const facultyForm = document.getElementById("facultyForm");
+const facultyList = document.getElementById("facultyList");
+const facultyMessage = document.getElementById("facultyMessage");
+
+if (facultyForm) {
+
+  // SAVE OR UPDATE FACULTY MEMBER
+  facultyForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const button = document.getElementById("saveFacultyButton");
+    const id = document.getElementById("facultyId").value;
+
+    const faculty = {
+      full_name: document.getElementById("facultyName").value.trim(),
+      position: document.getElementById("facultyPosition").value.trim(),
+      department: document.getElementById("facultyDepartment").value.trim(),
+      photo_url: document.getElementById("facultyPhoto").value.trim() || null
+    };
+
+    if (!faculty.full_name) {
+      showMessage(facultyMessage, "Please enter the full name.", "error");
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+    try {
+      let result;
+
+      if (id) {
+        result = await client
+          .from("faculty")
+          .update(faculty)
+          .eq("id", id);
+      } else {
+        result = await client
+          .from("faculty")
+          .insert([faculty]);
+      }
+
+      if (result.error) throw result.error;
+
+      facultyForm.reset();
+      document.getElementById("facultyId").value = "";
+      document.getElementById("cancelFacultyEdit").hidden = true;
+
+      showMessage(
+        facultyMessage,
+        id ? "Faculty member updated successfully!" :
+            "Faculty member saved successfully!",
+        "success"
+      );
+
+      await loadFaculty();
+
+    } catch (error) {
+      showMessage(facultyMessage, error.message, "error");
+    } finally {
+      button.disabled = false;
+      button.textContent = "Save Faculty Member";
+    }
+  });
+
+  // LOAD FACULTY RECORDS
+  async function loadFaculty() {
+    facultyList.innerHTML = "<p>Loading faculty records...</p>";
+
+    try {
+      const { data, error } = await client
+        .from("faculty")
+        .select("*")
+        .order("full_name", { ascending: true });
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        facultyList.innerHTML = "<p>No faculty members added yet.</p>";
+        return;
+      }
+
+      facultyList.innerHTML = data.map(person => `
+        <article class="announcement-item">
+
+          ${person.photo_url ? `
+            <img
+              src="${escapeHTML(person.photo_url)}"
+              alt="Photo of ${escapeHTML(person.full_name)}"
+              loading="lazy"
+              style="width:100px;height:100px;object-fit:cover;border-radius:8px;margin-bottom:10px;"
+            >
+          ` : ""}
+
+          <h3>${escapeHTML(person.full_name)}</h3>
+
+          <p><strong>Position:</strong>
+            ${escapeHTML(person.position || "Not specified")}
+          </p>
+
+          <p><strong>Department:</strong>
+            ${escapeHTML(person.department || "Not specified")}
+          </p>
+
+          <div class="announcement-actions">
+
+            <button
+              type="button"
+              class="secondary-button"
+              data-faculty-action="edit"
+              data-id="${Number(person.id)}"
+            >
+              Edit
+            </button>
+
+            <button
+              type="button"
+              class="delete-button"
+              data-faculty-action="delete"
+              data-id="${Number(person.id)}"
+            >
+              Delete
+            </button>
+
+          </div>
+        </article>
+      `).join("");
+
+    } catch (error) {
+      facultyList.textContent =
+        "Unable to load faculty records: " + error.message;
+    }
+  }
+
+  // EDIT OR DELETE FACULTY MEMBER
+  facultyList.addEventListener("click", async function(event) {
+    const button = event.target.closest("button[data-faculty-action]");
+
+    if (!button) return;
+
+    const id = button.dataset.id;
+    const action = button.dataset.facultyAction;
+
+    if (action === "edit") {
+      const { data, error } = await client
+        .from("faculty")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        showMessage(facultyMessage, error.message, "error");
+        return;
+      }
+
+      document.getElementById("facultyId").value = data.id;
+      document.getElementById("facultyName").value = data.full_name || "";
+      document.getElementById("facultyPosition").value = data.position || "";
+      document.getElementById("facultyDepartment").value = data.department || "";
+      document.getElementById("facultyPhoto").value = data.photo_url || "";
+
+      document.getElementById("saveFacultyButton").textContent =
+        "Update Faculty Member";
+
+      document.getElementById("cancelFacultyEdit").hidden = false;
+
+      document.getElementById("facultyName").focus();
+      hideMessage(facultyMessage);
+    }
+
+    if (action === "delete") {
+      const confirmed = confirm(
+        "Are you sure you want to permanently delete this faculty record?"
+      );
+
+      if (!confirmed) return;
+
+      const { error } = await client
+        .from("faculty")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        showMessage(facultyMessage, error.message, "error");
+        return;
+      }
+
+      showMessage(
+        facultyMessage,
+        "Faculty record deleted successfully.",
+        "success"
+      );
+
+      await loadFaculty();
+    }
+  });
+
+  // CANCEL EDIT
+  document.getElementById("cancelFacultyEdit")
+    .addEventListener("click", function() {
+
+      facultyForm.reset();
+
+      document.getElementById("facultyId").value = "";
+
+      document.getElementById("saveFacultyButton").textContent =
+        "Save Faculty Member";
+
+      this.hidden = true;
+      hideMessage(facultyMessage);
+    });
+
+  // REFRESH FACULTY LIST
+  document.getElementById("refreshFacultyButton")
+    .addEventListener("click", loadFaculty);
+
+}
 
   // INITIAL CHECK
   verifyAdmin();
