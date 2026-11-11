@@ -679,3 +679,78 @@ footer a:hover {
     grid-template-columns: 1fr;
   }
 }
+/* =========================================
+   KNHS PROFESSIONAL ACADEMICS SECTION
+========================================= */
+
+#academics {
+  padding: 80px 20px;
+  background: #f4f8f5;
+  text-align: center;
+}
+
+#academics > h2 {
+  color: #14532d;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  margin-bottom: 15px;
+}
+
+#academics > p {
+  color: #64748b;
+  max-width: 700px;
+  margin: 0 auto 45px;
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+#academics .cards {
+  max-width: 1150px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+#academics .cards article {
+  background: #ffffff;
+  padding: 35px 25px;
+  border-radius: 15px;
+  border: 1px solid #e2e8f0;
+  border-top: 5px solid #15803d;
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+#academics .cards article:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+}
+
+#academics .cards article h3 {
+  color: #14532d;
+  font-size: 1.25rem;
+  margin-bottom: 15px;
+}
+
+#academics .cards article p {
+  color: #64748b;
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin: 10px 0;
+}
+
+#academics .cards article p:first-of-type {
+  color: #15803d;
+  font-weight: 700;
+}
+
+@media (max-width: 650px) {
+  #academics {
+    padding: 55px 15px;
+  }
+
+  #academics .cards {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
