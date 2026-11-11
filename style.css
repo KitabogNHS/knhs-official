@@ -470,3 +470,21 @@ footer a:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* FACULTY PHOTO PLACEHOLDER */
+
+.faculty-photo-placeholder {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: #14532d;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin: 0 auto 18px;
+  border: 4px solid #d1fae5;
+}
