@@ -130,7 +130,7 @@ async function loadPublicFaculty() {
   facultyList.innerHTML = data.map(member => `
     <article>
       ${member.photo_url ? `<img src="${member.photo_url}" alt="${member.name}" class="faculty-photo">` : ""}
-      <h3>${member.name}</h3>
+      <h3>${member.full_name}</h3>
       <p>${member.position || ""}</p>
       <p>${member.department || ""}</p>
     </article>
