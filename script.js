@@ -102,9 +102,13 @@ loadPublicAnnouncements();
 // LOAD FACULTY & STAFF FROM SUPABASE
 // =====================================
 
+
 async function loadPublicFaculty() {
   const client = window.knhsSupabase;
   const facultyList = document.getElementById("facultyList");
+  const facultySearch = document.getElementById("facultySearch");
+  const facultyDepartment = document.getElementById("facultyDepartment");
+  const facultyCount = document.getElementById("facultyCount");
 
   if (!client || !facultyList) {
     console.error("Supabase connection or faculty section is unavailable.");
@@ -114,34 +118,108 @@ async function loadPublicFaculty() {
   const { data, error } = await client
     .from("faculty")
     .select("*")
-    .order("created_at", { ascending: true });
+    .order("full_name", { ascending: true });
 
   if (error) {
     console.error("Unable to load faculty:", error.message);
-    facultyList.innerHTML = "<p>Unable to load faculty and staff information.</p>";
+    facultyList.innerHTML =
+      '<p class="faculty-no-results">Unable to load faculty and staff information.</p>';
     return;
   }
-console.log("Faculty records received:", data);
+
   if (!data || data.length === 0) {
-    facultyList.innerHTML = "<p>No faculty and staff records available yet.</p>";
+    facultyList.innerHTML =
+      '<p class="faculty-no-results">No faculty and staff records available yet.</p>';
+
+    if (facultyCount) {
+      facultyCount.textContent = "0 faculty and staff members";
+    }
+
     return;
   }
 
-facultyList.innerHTML = data.map(member => `
-  <article>
-    ${
-      member.photo_url
-        ? `<img src="${member.photo_url}" alt="${member.full_name}" class="faculty-photo">`
-        : `<div class="faculty-photo-placeholder">KNHS</div>`
-    }
-    <h3>${member.full_name || "Faculty Member"}</h3>
-    <p>${member.position || "School Personnel"}</p>
-    <p>${member.department || ""}</p>
-  </article>
-`).join("");
+  function renderFaculty() {
+    const searchTerm = facultySearch
+      ? facultySearch.value.toLowerCase().trim()
+      : "";
 
+    const selectedDepartment = facultyDepartment
+      ? facultyDepartment.value
+      : "";
+
+    const filteredFaculty = data.filter(member => {
+      const name = (member.full_name || "").toLowerCase();
+      const position = (member.position || "").toLowerCase();
+      const department = (member.department || "").toLowerCase();
+
+      const matchesSearch =
+        name.includes(searchTerm) ||
+        position.includes(searchTerm) ||
+        department.includes(searchTerm);
+
+      const matchesDepartment =
+        !selectedDepartment ||
+        member.department === selectedDepartment;
+
+      return matchesSearch && matchesDepartment;
+    });
+
+    if (facultyCount) {
+      facultyCount.textContent =
+        `Showing ${filteredFaculty.length} of ${data.length} faculty and staff members`;
+    }
+
+    if (filteredFaculty.length === 0) {
+      facultyList.innerHTML =
+        '<p class="faculty-no-results">No matching faculty or staff found.</p>';
+      return;
+    }
+
+    facultyList.innerHTML = filteredFaculty.map(member => `
+      <article>
+        ${
+          member.photo_url
+            ? `<img src="${member.photo_url}" alt="${member.full_name || "Faculty member"}" class="faculty-photo">`
+            : `<div class="faculty-photo-placeholder">KNHS</div>`
+        }
+        <h3>${member.full_name || "Faculty Member"}</h3>
+        <p class="faculty-position">${member.position || "School Personnel"}</p>
+        <p>${member.department || ""}</p>
+      </article>
+    `).join("");
+  }
+
+  // Populate department filter
+  if (facultyDepartment) {
+    const departments = [
+      ...new Set(
+        data
+          .map(member => member.department)
+          .filter(department => department && department.trim() !== "")
+      )
+    ].sort();
+
+    facultyDepartment.innerHTML =
+      '<option value="">All Departments</option>' +
+      departments.map(department =>
+        `<option value="${department}">${department}</option>`
+      ).join("");
+  }
+
+  // Activate search and department filtering
+  if (facultySearch) {
+    facultySearch.addEventListener("input", renderFaculty);
+  }
+
+  if (facultyDepartment) {
+    facultyDepartment.addEventListener("change", renderFaculty);
+  }
+
+  // Display all faculty members
+  renderFaculty();
 }
 
-// Load faculty when the homepage opens
+// Load faculty when homepage opens
 loadPublicFaculty();
+
 
