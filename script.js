@@ -96,3 +96,47 @@ async function loadPublicAnnouncements() {
 
 // Load announcements when the homepage opens
 loadPublicAnnouncements();
+
+
+// =====================================
+// LOAD FACULTY & STAFF FROM SUPABASE
+// =====================================
+
+async function loadPublicFaculty() {
+  const client = window.knhsSupabase;
+  const facultyList = document.getElementById("facultyList");
+
+  if (!client || !facultyList) {
+    console.error("Supabase connection or faculty section is unavailable.");
+    return;
+  }
+
+  const { data, error } = await client
+    .from("faculty")
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Unable to load faculty:", error.message);
+    facultyList.innerHTML = "<p>Unable to load faculty and staff information.</p>";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    facultyList.innerHTML = "<p>No faculty and staff records available yet.</p>";
+    return;
+  }
+
+  facultyList.innerHTML = data.map(member => `
+    <article>
+      ${member.photo_url ? `<img src="${member.photo_url}" alt="${member.name}" class="faculty-photo">` : ""}
+      <h3>${member.name}</h3>
+      <p>${member.position || ""}</p>
+      <p>${member.department || ""}</p>
+    </article>
+  `).join("");
+}
+
+// Load faculty when the homepage opens
+loadPublicFaculty();
+
