@@ -754,3 +754,121 @@ footer a:hover {
     gap: 18px;
   }
 }
+
+/* =========================================
+   KNHS PROFESSIONAL ANNOUNCEMENTS SECTION
+========================================= */
+
+#announcements {
+  padding: 75px 20px;
+  background: #f4f8f5;
+}
+
+.announcements-directory {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.announcements-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.announcements-label {
+  display: inline-block;
+  color: #15803d;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.announcements-header h2 {
+  color: #14532d;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  margin-bottom: 12px;
+}
+
+.announcements-header p {
+  color: #64748b;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.announcements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.announcement-card {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.announcement-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(15, 23, 42, 0.1);
+}
+
+.announcement-image {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  display: block;
+}
+
+.announcement-content {
+  padding: 24px;
+}
+
+.announcement-date {
+  color: #15803d;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.announcement-content h3 {
+  color: #14532d;
+  font-size: 1.15rem;
+  margin: 0 0 12px;
+}
+
+.announcement-content p:not(.announcement-date) {
+  color: #64748b;
+  line-height: 1.7;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.announcement-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 35px 20px;
+  color: #64748b;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+/* MOBILE RESPONSIVENESS */
+
+@media (max-width: 650px) {
+  #announcements {
+    padding: 50px 15px;
+  }
+
+  .announcements-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .announcement-image {
+    height: 190px;
+  }
+}
