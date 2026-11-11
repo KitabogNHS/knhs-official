@@ -62,12 +62,39 @@
   </section>
 
  
-<section id="faculty" class="section alternate">
-  <h2>Faculty & Staff</h2>
-  <p>Meet the dedicated educators and personnel of our school.</p>
 
-  <div id="facultyList" class="cards">
-    <p>Loading faculty and staff...</p>
+<section id="faculty" class="section alternate">
+  <div class="faculty-directory">
+
+    <div class="faculty-header">
+      <span class="faculty-label">OUR SCHOOL COMMUNITY</span>
+      <h2>Faculty & Staff Directory</h2>
+      <p>
+        Meet the dedicated educators and personnel
+        of Kitabog National High School.
+      </p>
+    </div>
+
+    <div class="faculty-tools">
+      <input
+        type="search"
+        id="facultySearch"
+        placeholder="Search by name, position, or department..."
+        aria-label="Search faculty and staff"
+      >
+      <select id="facultyDepartment" aria-label="Filter by department">
+        <option value="">All Departments</option>
+      </select>
+    </div>
+
+    <div id="facultyCount" class="faculty-count">
+      Loading faculty and staff...
+    </div>
+
+    <div id="facultyList" class="faculty-directory-grid">
+      <p>Loading faculty and staff...</p>
+    </div>
+
   </div>
 </section>
 
