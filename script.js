@@ -198,7 +198,7 @@ async function loadPublicFaculty() {
           .filter(department => department && department.trim() !== "")
       )
     ].sort();
-
+console.log("Departments found:", departments);
     facultyDepartment.innerHTML =
       '<option value="">All Departments</option>' +
       departments.map(department =>
