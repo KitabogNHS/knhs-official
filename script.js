@@ -121,7 +121,7 @@ async function loadPublicFaculty() {
     facultyList.innerHTML = "<p>Unable to load faculty and staff information.</p>";
     return;
   }
-
+console.log("Faculty records received:", data);
   if (!data || data.length === 0) {
     facultyList.innerHTML = "<p>No faculty and staff records available yet.</p>";
     return;
