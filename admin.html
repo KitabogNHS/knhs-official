@@ -412,6 +412,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 
+
 <script>
   const client = window.knhsSupabase;
 
@@ -424,8 +425,13 @@
   const announcementForm = document.getElementById("announcementForm");
   const announcementList = document.getElementById("announcementList");
 
+  const facultyForm = document.getElementById("facultyForm");
+  const facultyList = document.getElementById("facultyList");
+  const facultyMessage = document.getElementById("facultyMessage");
+
   document.getElementById("year").textContent = new Date().getFullYear();
 
+  // MESSAGE HELPERS
   function showMessage(element, message, type) {
     element.textContent = message;
     element.className = "message " + type;
@@ -453,156 +459,6 @@
     dashboardSection.hidden = true;
   }
 
-  async function showDashboard(email) {
-  loginSection.hidden = true;
-  dashboardSection.hidden = false;
-
-  document.getElementById("adminEmail").textContent =
-    "Signed in as: " + email;
-
-  await loadAnnouncements();
-
-  if (typeof loadFaculty === "function") {
-    await loadFaculty();
-  }
-
-  async function verifyAdmin() {
-    if (!client) {
-      showLogin();
-      showMessage(
-        loginMessage,
-        "Supabase connection is unavailable. Check supabase.js.",
-        "error"
-      );
-      return;
-    }
-
-    const { data: { session }, error: sessionError } =
-      await client.auth.getSession();
-
-    if (sessionError || !session) {
-      showLogin();
-      return;
-    }
-
-    const { data: isAdmin, error } = await client.rpc("is_admin");
-
-    if (error || isAdmin !== true) {
-      await client.auth.signOut();
-      showLogin();
-      showMessage(
-        loginMessage,
-        "This account is not authorized as a KNHS administrator.",
-        "error"
-      );
-      return;
-    }
-
-    await showDashboard(session.user.email);
-  }
-
-  // ADMIN LOGIN
-  loginForm.addEventListener("submit", async function(event) {
-    event.preventDefault();
-
-    if (!client) {
-      showMessage(loginMessage, "Supabase connection is unavailable.", "error");
-      return;
-    }
-
-    const button = document.getElementById("loginButton");
-    button.disabled = true;
-    button.textContent = "Signing in...";
-
-    try {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      const { data, error } = await client.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) throw error;
-
-      const { data: isAdmin, error: adminError } =
-        await client.rpc("is_admin");
-
-      if (adminError || isAdmin !== true) {
-        await client.auth.signOut();
-        throw new Error("Your account does not have administrator permission.");
-      }
-
-      hideMessage(loginMessage);
-      await showDashboard(data.user.email);
-
-    } catch (error) {
-      showMessage(loginMessage, error.message, "error");
-    } finally {
-      button.disabled = false;
-      button.textContent = "Sign In";
-    }
-  });
-
-  // SAVE OR UPDATE ANNOUNCEMENT
-  announcementForm.addEventListener("submit", async function(event) {
-    event.preventDefault();
-
-    const button = document.getElementById("saveAnnouncementButton");
-    const id = document.getElementById("announcementId").value;
-
-    const announcement = {
-      title: document.getElementById("announcementTitle").value.trim(),
-      description: document.getElementById("announcementDescription").value.trim(),
-      image_url: document.getElementById("announcementImage").value.trim() || null,
-      published: document.getElementById("announcementPublished").checked
-    };
-
-    if (!announcement.title) {
-      showMessage(announcementMessage, "Please enter an announcement title.", "error");
-      return;
-    }
-
-    button.disabled = true;
-    button.textContent = "Saving...";
-
-    try {
-      let result;
-
-      if (id) {
-        result = await client
-          .from("announcements")
-          .update(announcement)
-          .eq("id", id);
-      } else {
-        result = await client
-          .from("announcements")
-          .insert([announcement]);
-      }
-
-      if (result.error) throw result.error;
-
-      announcementForm.reset();
-      document.getElementById("announcementId").value = "";
-      document.getElementById("cancelEditButton").hidden = true;
-      button.textContent = "Save Announcement";
-
-      showMessage(
-        announcementMessage,
-        id ? "Announcement updated successfully!" : "Announcement saved successfully!",
-        "success"
-      );
-
-      await loadAnnouncements();
-
-    } catch (error) {
-      showMessage(announcementMessage, error.message, "error");
-    } finally {
-      button.disabled = false;
-      button.textContent = "Save Announcement";
-    }
-  });
-
   // LOAD ANNOUNCEMENTS
   async function loadAnnouncements() {
     announcementList.innerHTML = "<p>Loading announcements...</p>";
@@ -616,7 +472,8 @@
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        announcementList.innerHTML = "<p>No announcements have been added yet.</p>";
+        announcementList.innerHTML =
+          "<p>No announcements have been added yet.</p>";
         return;
       }
 
@@ -661,11 +518,250 @@
       `).join("");
 
     } catch (error) {
-      announcementList.textContent = "Unable to load announcements: " + error.message;
+      announcementList.textContent =
+        "Unable to load announcements: " + error.message;
     }
   }
 
-  // EDIT OR DELETE
+  // LOAD FACULTY AND STAFF
+  async function loadFaculty() {
+    facultyList.innerHTML = "<p>Loading faculty records...</p>";
+
+    try {
+      const { data, error } = await client
+        .from("faculty")
+        .select("*")
+        .order("full_name", { ascending: true });
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        facultyList.innerHTML =
+          "<p>No faculty members added yet.</p>";
+        return;
+      }
+
+      facultyList.innerHTML = data.map(person => `
+        <article class="announcement-item">
+
+          ${person.photo_url ? `
+            <img
+              src="${escapeHTML(person.photo_url)}"
+              alt="Photo of ${escapeHTML(person.full_name)}"
+              loading="lazy"
+              style="width:100px;height:100px;object-fit:cover;border-radius:8px;margin-bottom:10px;"
+            >
+          ` : ""}
+
+          <h3>${escapeHTML(person.full_name)}</h3>
+
+          <p><strong>Position:</strong>
+            ${escapeHTML(person.position || "Not specified")}
+          </p>
+
+          <p><strong>Department:</strong>
+            ${escapeHTML(person.department || "Not specified")}
+          </p>
+
+          <div class="announcement-actions">
+            <button
+              type="button"
+              class="secondary-button"
+              data-faculty-action="edit"
+              data-id="${Number(person.id)}"
+            >
+              Edit
+            </button>
+
+            <button
+              type="button"
+              class="delete-button"
+              data-faculty-action="delete"
+              data-id="${Number(person.id)}"
+            >
+              Delete
+            </button>
+          </div>
+        </article>
+      `).join("");
+
+    } catch (error) {
+      facultyList.textContent =
+        "Unable to load faculty records: " + error.message;
+    }
+  }
+
+  // SHOW DASHBOARD
+  async function showDashboard(email) {
+    loginSection.hidden = true;
+    dashboardSection.hidden = false;
+
+    document.getElementById("adminEmail").textContent =
+      "Signed in as: " + email;
+
+    await loadAnnouncements();
+    await loadFaculty();
+  }
+
+  // VERIFY EXISTING ADMIN SESSION
+  async function verifyAdmin() {
+    if (!client) {
+      showLogin();
+      showMessage(
+        loginMessage,
+        "Supabase connection is unavailable. Check supabase.js.",
+        "error"
+      );
+      return;
+    }
+
+    try {
+      const { data: { session }, error: sessionError } =
+        await client.auth.getSession();
+
+      if (sessionError) throw sessionError;
+
+      if (!session) {
+        showLogin();
+        return;
+      }
+
+      const { data: isAdmin, error } =
+        await client.rpc("is_admin");
+
+      if (error || isAdmin !== true) {
+        await client.auth.signOut();
+        showLogin();
+        showMessage(
+          loginMessage,
+          "This account is not authorized as a KNHS administrator.",
+          "error"
+        );
+        return;
+      }
+
+      await showDashboard(session.user.email);
+
+    } catch (error) {
+      showLogin();
+      showMessage(loginMessage, error.message, "error");
+    }
+  }
+
+  // ADMIN LOGIN
+  loginForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    if (!client) {
+      showMessage(
+        loginMessage,
+        "Supabase connection is unavailable.",
+        "error"
+      );
+      return;
+    }
+
+    const button = document.getElementById("loginButton");
+    button.disabled = true;
+    button.textContent = "Signing in...";
+
+    try {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const { data, error } = await client.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      const { data: isAdmin, error: adminError } =
+        await client.rpc("is_admin");
+
+      if (adminError || isAdmin !== true) {
+        await client.auth.signOut();
+        throw new Error(
+          "Your account does not have administrator permission."
+        );
+      }
+
+      hideMessage(loginMessage);
+      await showDashboard(data.user.email);
+
+    } catch (error) {
+      showMessage(loginMessage, error.message, "error");
+    } finally {
+      button.disabled = false;
+      button.textContent = "Sign In";
+    }
+  });
+
+  // SAVE OR UPDATE ANNOUNCEMENT
+  announcementForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const button = document.getElementById("saveAnnouncementButton");
+    const id = document.getElementById("announcementId").value;
+
+    const announcement = {
+      title: document.getElementById("announcementTitle").value.trim(),
+      description: document.getElementById("announcementDescription").value.trim(),
+      image_url: document.getElementById("announcementImage").value.trim() || null,
+      published: document.getElementById("announcementPublished").checked
+    };
+
+    if (!announcement.title) {
+      showMessage(
+        announcementMessage,
+        "Please enter an announcement title.",
+        "error"
+      );
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+    try {
+      let result;
+
+      if (id) {
+        result = await client
+          .from("announcements")
+          .update(announcement)
+          .eq("id", id);
+      } else {
+        result = await client
+          .from("announcements")
+          .insert([announcement]);
+      }
+
+      if (result.error) throw result.error;
+
+      announcementForm.reset();
+      document.getElementById("announcementId").value = "";
+      document.getElementById("cancelEditButton").hidden = true;
+
+      showMessage(
+        announcementMessage,
+        id
+          ? "Announcement updated successfully!"
+          : "Announcement saved successfully!",
+        "success"
+      );
+
+      await loadAnnouncements();
+
+    } catch (error) {
+      showMessage(announcementMessage, error.message, "error");
+    } finally {
+      button.disabled = false;
+      button.textContent = "Save Announcement";
+    }
+  });
+
+  // EDIT OR DELETE ANNOUNCEMENT
   announcementList.addEventListener("click", async function(event) {
     const button = event.target.closest("button[data-action]");
     if (!button) return;
@@ -687,11 +783,15 @@
 
       document.getElementById("announcementId").value = data.id;
       document.getElementById("announcementTitle").value = data.title || "";
-      document.getElementById("announcementDescription").value = data.description || "";
-      document.getElementById("announcementImage").value = data.image_url || "";
-      document.getElementById("announcementPublished").checked = !!data.published;
+      document.getElementById("announcementDescription").value =
+        data.description || "";
+      document.getElementById("announcementImage").value =
+        data.image_url || "";
+      document.getElementById("announcementPublished").checked =
+        !!data.published;
 
-      document.getElementById("saveAnnouncementButton").textContent = "Update Announcement";
+      document.getElementById("saveAnnouncementButton").textContent =
+        "Update Announcement";
       document.getElementById("cancelEditButton").hidden = false;
 
       document.getElementById("announcementTitle").focus();
@@ -715,46 +815,50 @@
         return;
       }
 
-      showMessage(announcementMessage, "Announcement deleted successfully.", "success");
+      showMessage(
+        announcementMessage,
+        "Announcement deleted successfully.",
+        "success"
+      );
+
       await loadAnnouncements();
     }
   });
 
-  // CANCEL EDIT
-  document.getElementById("cancelEditButton").addEventListener("click", function() {
-    announcementForm.reset();
-    document.getElementById("announcementId").value = "";
-    document.getElementById("saveAnnouncementButton").textContent = "Save Announcement";
-    this.hidden = true;
-    hideMessage(announcementMessage);
-  });
+  // CANCEL ANNOUNCEMENT EDIT
+  document.getElementById("cancelEditButton")
+    .addEventListener("click", function() {
+      announcementForm.reset();
+      document.getElementById("announcementId").value = "";
+      document.getElementById("saveAnnouncementButton").textContent =
+        "Save Announcement";
+      this.hidden = true;
+      hideMessage(announcementMessage);
+    });
 
-  // REFRESH
-  document.getElementById("refreshAnnouncementsButton").addEventListener("click", loadAnnouncements);
+  // REFRESH ANNOUNCEMENTS
+  document.getElementById("refreshAnnouncementsButton")
+    .addEventListener("click", loadAnnouncements);
 
   // LOGOUT
-  document.getElementById("logoutButton").addEventListener("click", async function() {
-    const { error } = await client.auth.signOut();
+  document.getElementById("logoutButton")
+    .addEventListener("click", async function() {
+      const { error } = await client.auth.signOut();
 
-    if (error) {
-      alert("Unable to sign out. Please try again.");
-      return;
-    }
+      if (error) {
+        alert("Unable to sign out. Please try again.");
+        return;
+      }
 
-    announcementForm.reset();
-    showLogin();
-    showMessage(loginMessage, "You have successfully signed out.", "success");
-  });
-
-// =====================================
-// FACULTY & STAFF MANAGEMENT
-// =====================================
-
-const facultyForm = document.getElementById("facultyForm");
-const facultyList = document.getElementById("facultyList");
-const facultyMessage = document.getElementById("facultyMessage");
-
-if (facultyForm) {
+      announcementForm.reset();
+      facultyForm.reset();
+      showLogin();
+      showMessage(
+        loginMessage,
+        "You have successfully signed out.",
+        "success"
+      );
+    });
 
   // SAVE OR UPDATE FACULTY MEMBER
   facultyForm.addEventListener("submit", async function(event) {
@@ -771,7 +875,11 @@ if (facultyForm) {
     };
 
     if (!faculty.full_name) {
-      showMessage(facultyMessage, "Please enter the full name.", "error");
+      showMessage(
+        facultyMessage,
+        "Please enter the full name.",
+        "error"
+      );
       return;
     }
 
@@ -800,8 +908,9 @@ if (facultyForm) {
 
       showMessage(
         facultyMessage,
-        id ? "Faculty member updated successfully!" :
-            "Faculty member saved successfully!",
+        id
+          ? "Faculty member updated successfully!"
+          : "Faculty member saved successfully!",
         "success"
       );
 
@@ -815,78 +924,11 @@ if (facultyForm) {
     }
   });
 
-  // LOAD FACULTY RECORDS
-  async function loadFaculty() {
-    facultyList.innerHTML = "<p>Loading faculty records...</p>";
-
-    try {
-      const { data, error } = await client
-        .from("faculty")
-        .select("*")
-        .order("full_name", { ascending: true });
-
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        facultyList.innerHTML = "<p>No faculty members added yet.</p>";
-        return;
-      }
-
-      facultyList.innerHTML = data.map(person => `
-        <article class="announcement-item">
-
-          ${person.photo_url ? `
-            <img
-              src="${escapeHTML(person.photo_url)}"
-              alt="Photo of ${escapeHTML(person.full_name)}"
-              loading="lazy"
-              style="width:100px;height:100px;object-fit:cover;border-radius:8px;margin-bottom:10px;"
-            >
-          ` : ""}
-
-          <h3>${escapeHTML(person.full_name)}</h3>
-
-          <p><strong>Position:</strong>
-            ${escapeHTML(person.position || "Not specified")}
-          </p>
-
-          <p><strong>Department:</strong>
-            ${escapeHTML(person.department || "Not specified")}
-          </p>
-
-          <div class="announcement-actions">
-
-            <button
-              type="button"
-              class="secondary-button"
-              data-faculty-action="edit"
-              data-id="${Number(person.id)}"
-            >
-              Edit
-            </button>
-
-            <button
-              type="button"
-              class="delete-button"
-              data-faculty-action="delete"
-              data-id="${Number(person.id)}"
-            >
-              Delete
-            </button>
-
-          </div>
-        </article>
-      `).join("");
-
-    } catch (error) {
-      facultyList.textContent =
-        "Unable to load faculty records: " + error.message;
-    }
-  }
-
   // EDIT OR DELETE FACULTY MEMBER
   facultyList.addEventListener("click", async function(event) {
-    const button = event.target.closest("button[data-faculty-action]");
+    const button = event.target.closest(
+      "button[data-faculty-action]"
+    );
 
     if (!button) return;
 
@@ -906,14 +948,17 @@ if (facultyForm) {
       }
 
       document.getElementById("facultyId").value = data.id;
-      document.getElementById("facultyName").value = data.full_name || "";
-      document.getElementById("facultyPosition").value = data.position || "";
-      document.getElementById("facultyDepartment").value = data.department || "";
-      document.getElementById("facultyPhoto").value = data.photo_url || "";
+      document.getElementById("facultyName").value =
+        data.full_name || "";
+      document.getElementById("facultyPosition").value =
+        data.position || "";
+      document.getElementById("facultyDepartment").value =
+        data.department || "";
+      document.getElementById("facultyPhoto").value =
+        data.photo_url || "";
 
       document.getElementById("saveFacultyButton").textContent =
         "Update Faculty Member";
-
       document.getElementById("cancelFacultyEdit").hidden = false;
 
       document.getElementById("facultyName").focus();
@@ -947,17 +992,13 @@ if (facultyForm) {
     }
   });
 
-  // CANCEL EDIT
+  // CANCEL FACULTY EDIT
   document.getElementById("cancelFacultyEdit")
     .addEventListener("click", function() {
-
       facultyForm.reset();
-
       document.getElementById("facultyId").value = "";
-
       document.getElementById("saveFacultyButton").textContent =
         "Save Faculty Member";
-
       this.hidden = true;
       hideMessage(facultyMessage);
     });
@@ -966,9 +1007,7 @@ if (facultyForm) {
   document.getElementById("refreshFacultyButton")
     .addEventListener("click", loadFaculty);
 
-}
-
-  // INITIAL CHECK
+  // INITIAL ADMIN SESSION CHECK
   verifyAdmin();
 </script>
 
