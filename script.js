@@ -127,14 +127,19 @@ console.log("Faculty records received:", data);
     return;
   }
 
-  facultyList.innerHTML = data.map(member => `
-    <article>
-      ${member.photo_url ? `<img src="${member.photo_url}" alt="${member.name}" class="faculty-photo">` : ""}
-      <h3>${member.full_name}</h3>
-      <p>${member.position || ""}</p>
-      <p>${member.department || ""}</p>
-    </article>
-  `).join("");
+facultyList.innerHTML = data.map(member => `
+  <article>
+    ${
+      member.photo_url
+        ? `<img src="${member.photo_url}" alt="${member.full_name}" class="faculty-photo">`
+        : `<div class="faculty-photo-placeholder">KNHS</div>`
+    }
+    <h3>${member.full_name || "Faculty Member"}</h3>
+    <p>${member.position || "School Personnel"}</p>
+    <p>${member.department || ""}</p>
+  </article>
+`).join("");
+
 }
 
 // Load faculty when the homepage opens
