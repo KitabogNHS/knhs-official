@@ -488,3 +488,194 @@ footer a:hover {
   margin: 0 auto 18px;
   border: 4px solid #d1fae5;
 }
+
+/* =========================================
+   KNHS PROFESSIONAL FACULTY DIRECTORY
+========================================= */
+
+#faculty {
+  padding: 75px 20px;
+  background: #f4f8f5;
+}
+
+.faculty-directory {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.faculty-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.faculty-label {
+  display: inline-block;
+  color: #15803d;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.faculty-header h2 {
+  color: #14532d;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  margin-bottom: 12px;
+}
+
+.faculty-header p {
+  color: #64748b;
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* SEARCH AND FILTER */
+
+.faculty-tools {
+  display: flex;
+  gap: 15px;
+  max-width: 850px;
+  margin: 0 auto 20px;
+}
+
+.faculty-tools input,
+.faculty-tools select {
+  padding: 14px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.95rem;
+  outline: none;
+  min-width: 0;
+}
+
+.faculty-tools input {
+  flex: 2;
+}
+
+.faculty-tools select {
+  flex: 1;
+  cursor: pointer;
+}
+
+.faculty-tools input:focus,
+.faculty-tools select:focus {
+  border-color: #15803d;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12);
+}
+
+/* FACULTY COUNT */
+
+.faculty-count {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 28px;
+}
+
+/* FACULTY GRID */
+
+.faculty-directory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 25px;
+}
+
+/* PROFILE CARD */
+
+.faculty-directory-grid article {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 28px 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.faculty-directory-grid article:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(15, 23, 42, 0.10);
+}
+
+.faculty-directory-grid .faculty-photo {
+  width: 145px;
+  height: 145px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  border: 5px solid #dcfce7;
+  margin: 0 auto 18px;
+  display: block;
+}
+
+.faculty-directory-grid .faculty-photo-placeholder {
+  width: 145px;
+  height: 145px;
+  border-radius: 50%;
+  background: #14532d;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin: 0 auto 18px;
+  border: 5px solid #dcfce7;
+}
+
+.faculty-directory-grid article h3 {
+  color: #14532d;
+  font-size: 1.12rem;
+  margin: 0 0 9px;
+}
+
+.faculty-directory-grid article p {
+  color: #64748b;
+  font-size: 0.92rem;
+  margin: 5px 0;
+  line-height: 1.5;
+}
+
+.faculty-directory-grid article .faculty-position {
+  color: #15803d;
+  font-weight: 600;
+}
+
+/* EMPTY SEARCH RESULTS */
+
+.faculty-no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 35px 20px;
+  color: #64748b;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+/* MOBILE RESPONSIVENESS */
+
+@media (max-width: 650px) {
+  #faculty {
+    padding: 50px 15px;
+  }
+
+  .faculty-tools {
+    flex-direction: column;
+  }
+
+  .faculty-directory-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+  }
+}
+
+@media (max-width: 400px) {
+  .faculty-directory-grid {
+    grid-template-columns: 1fr;
+  }
+}
