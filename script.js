@@ -224,3 +224,58 @@ async function loadPublicFaculty() {
 loadPublicFaculty();
 
 
+// =====================================
+// PUBLIC ANNOUNCEMENTS DISPLAY
+// =====================================
+
+window.displayAnnouncements = function(data) {
+  const announcementsList =
+    document.getElementById("announcementsList");
+
+  if (!announcementsList) {
+    console.error("Announcements display container not found.");
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    announcementsList.innerHTML = `
+      <p class="announcement-empty">
+        No announcements available at this time.
+      </p>
+    `;
+    return;
+  }
+
+  announcementsList.innerHTML = data.map(item => `
+    <article class="announcement-card">
+
+      ${
+        item.image_url
+          ? `<img src="${item.image_url}" alt="Announcement image" class="announcement-image">`
+          : ""
+      }
+
+      <div class="announcement-content">
+
+        <p class="announcement-date">
+          ${item.created_at
+            ? new Date(item.created_at).toLocaleDateString("en-PH", {
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+              })
+            : ""}
+        </p>
+
+        <h3>${item.title || "School Announcement"}</h3>
+
+        <p>${item.description || ""}</p>
+
+      </div>
+
+    </article>
+  `).join("");
+};
+
+// Load public announcements when homepage opens
+loadPublicAnnouncements();
