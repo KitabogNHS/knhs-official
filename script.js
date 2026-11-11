@@ -158,8 +158,9 @@ async function loadPublicFaculty() {
         department.includes(searchTerm);
 
       const matchesDepartment =
-        !selectedDepartment ||
-        member.department === selectedDepartment;
+  !selectedDepartment ||
+  (member.department || "").trim().toLowerCase() ===
+  selectedDepartment.trim().toLowerCase();
 
       return matchesSearch && matchesDepartment;
     });
