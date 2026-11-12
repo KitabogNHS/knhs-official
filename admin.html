@@ -1025,10 +1025,11 @@
   verifyAdmin();
 
 // ANNOUNCEMENT IMAGE PREVIEW
-const announcementImageFile = document.getElementById("announcementImageFile");
-const announcementImagePreview = document.getElementById("announcementImagePreview");
+window.addEventListener("DOMContentLoaded", function () {
+  const announcementImageFile = document.getElementById("announcementImageFile");
+  const announcementImagePreview = document.getElementById("announcementImagePreview");
 
-if (announcementImageFile && announcementImagePreview) {
+  if (announcementImageFile && announcementImagePreview) {
   announcementImageFile.addEventListener("change", function () {
     const file = this.files[0];
 
