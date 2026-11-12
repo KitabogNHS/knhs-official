@@ -289,7 +289,11 @@
   type="file"
   id="announcementImageFile"
   accept="image/jpeg,image/png,image/webp"
->
+
+<div id="announcementImagePreview" style="margin-top: 12px;">
+</div>
+ 
+  >
 
 <p>Select a JPG, PNG, or WebP image.</p>
 
@@ -1019,6 +1023,40 @@
 
   // INITIAL ADMIN SESSION CHECK
   verifyAdmin();
+
+// ANNOUNCEMENT IMAGE PREVIEW
+const announcementImageFile = document.getElementById("announcementImageFile");
+const announcementImagePreview = document.getElementById("announcementImagePreview");
+
+if (announcementImageFile && announcementImagePreview) {
+  announcementImageFile.addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (!file) {
+      announcementImagePreview.innerHTML = "";
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      announcementImagePreview.innerHTML =
+        "<p>Please select a valid image file.</p>";
+      this.value = "";
+      return;
+    }
+
+    const imageUrl = URL.createObjectURL(file);
+
+    announcementImagePreview.innerHTML = `
+      <p><strong>Image Preview:</strong></p>
+      <img
+        src="${imageUrl}"
+        alt="Announcement image preview"
+        style="max-width: 300px; width: 100%; height: auto; border-radius: 10px; border: 1px solid #ddd;"
+      >
+    `;
+  });
+}
+
 </script>
 
 </body>
